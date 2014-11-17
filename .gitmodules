@@ -1,0 +1,3 @@
+[submodule "api_ipf"]
+	path = api_ipf
+	url = git@github.com:erigones/api_ipf.git
