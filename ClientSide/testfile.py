@@ -1,19 +1,18 @@
 from sys import argv
 from os import path
 from requests import get, put, post, delete
-from settings import URL
 
+URL = 'http://127.0.0.1:8000/api_ipf/'
 method = argv[1]
 
-print(get(''.join(URL, 'test/')).text)
+print(get(''.join([URL, 'test/'])).text)
 
 if method in ['post','get', 'put', 'delete']:
 
     try:
         file_path = argv[2]
-        file = path.basename(file_path)
-        title,ext = path.splitext(file)
-        url = ''.join(URL,'config/', title)
+        file_name = path.basename(file_path)
+        url = ''.join([URL, 'config/', file_name, '/'])
     except IndexError:
         print('No file path.')
         exit(1)
@@ -28,21 +27,25 @@ if method in ['post','get', 'put', 'delete']:
     elif method == 'put':
         try:
             with open(file_path, 'r') as f:
-                print(put(url, data={'logfile':(file, f.read)}).text)
+                print(put(url, files={'title':(file_name,''),
+                                      'logfile':(file_name, f.read())}).text)
         except Exception as e:
             print(e)
 
     elif method == 'delete':
         try:
-            print(delete(url).text)
+            delete(url)
         except Exception as e:
             print(e)
     else:
-        url = ''.join(URL,'config/')
-        with open(file_path, 'r') as f:
-            r = post(url, data={'title':(title,''), 'logfile':(file, f.read)})
-            print(r.text)
+        url = ''.join([URL,'config/'])
+        try:
+            with open(file_path, 'r') as f:
+                print(post(url, files={'title':(file_name,''),
+                                       'logfile':(file_name, f.read())}).text)
+        except Exception as e:
+            print(e)
 
-elif method == 'get':
-    url = ''.join(URL,'config/')
+elif method == 'all':
+    url = ''.join([URL,'config/'])
     print(get(url).text)
