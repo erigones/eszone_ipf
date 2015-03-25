@@ -5,18 +5,19 @@ from subprocess import Popen
 from requests import put, post, delete
 from helpers import *
 
+
 class FileHandler():
 
     def __init__(self, file_path):
-        self.URL = ''.join([URL,'config/'])
+        self.URL = ''.join([URL, 'config/'])
         self.path = file_path
         self.func = {
-            'show'   : self.show_one,
-            'get'    : self.download,
-            'put'    : self.upload,
-            'post'   : self.create,
-            'delete' : self.remove,
-            'modify' : self.modify}
+            'show':   self.show_one,
+            'get':    self.download,
+            'put':    self.upload,
+            'post':   self.create,
+            'delete': self.remove,
+            'modify': self.modify}
         self.name = basename(self.path)
         self.url = ''.join([self.URL, self.name, '/'])
 
@@ -30,8 +31,8 @@ class FileHandler():
         try:
             with open(self.path, 'r') as f:
                 print(post(self.URL,
-                           files={'title':(self.name,''),
-                                  'logfile':(self.name, f.read())}).text)
+                           files={'title':   (self.name, ''),
+                                  'logfile': (self.name, f.read())}).text)
         except Exception as e:
             print(e)
 
@@ -49,8 +50,8 @@ class FileHandler():
         try:
             with open(self.path, 'r') as f:
                 print(put(self.url,
-                          files={'title':(self.name,''),
-                                 'logfile':(self.name, f.read())}).text)
+                          files={'title':   (self.name, ''),
+                                 'logfile': (self.name, f.read())}).text)
         except Exception as e:
             print(e)
 
@@ -91,7 +92,7 @@ try:
         except Exception as e:
             print(e)
 
-    elif argv[1] in ['ipfstat', 'ipnat', 'ippool']:
+    elif argv[1] in ['ipfstat', 'ipnat', 'ippool', 'ipmon']:
         try:
             print get(''.join([URL, 'command/', ' '.join(argv[1:]), '/'])).text
         except Exception as e:
