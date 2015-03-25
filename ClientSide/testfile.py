@@ -85,29 +85,18 @@ try:
         except Exception as e:
             print(e)
 
-    elif argv[1] == 'ipfstat':
+    elif argv[1] == 'ipf':
         try:
-            print get(''.join([URL, ' '.join(argv[1:]), '/'])).text
-        except IndexError:
-            print get(''.join([URL, 'ipfstat/'])).text
+            print get(''.join([URL, ''.join(argv[1:]), '/'])).text
         except Exception as e:
             print(e)
 
-    elif argv[1] == 'ipnat':
+    elif argv[1] in ['ipfstat', 'ipnat', 'ippool']:
         try:
-            print get(''.join([URL, ' '.join(argv[1:]), '/'])).text
-        except IndexError:
-            print get(''.join([URL, 'ipnat/'])).text
+            print get(''.join([URL, 'command/', ' '.join(argv[1:]), '/'])).text
         except Exception as e:
             print(e)
 
-    elif argv[1] == 'fw':
-        try:
-            print put(''.join([URL, 'fw', argv[2], '/'])).text
-        except IndexError:
-            print get(''.join([URL, 'fw/'])).text
-        except Exception as e:
-            print(e)
     else:
         print('Error: Unknown command.')
 
