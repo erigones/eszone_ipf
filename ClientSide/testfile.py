@@ -1,8 +1,8 @@
 from sys import argv
 from os import remove, stat
 from os.path import basename
-from requests import get, put, post, delete
-from webbrowser import open as wb_open
+from subprocess import Popen
+from requests import put, post, delete
 from helpers import *
 
 class FileHandler():
@@ -16,8 +16,8 @@ class FileHandler():
             'put'    : self.upload,
             'post'   : self.create,
             'delete' : self.remove,
-            'change' : self.change}
-        self.name = basename(self.file_path)
+            'modify' : self.modify}
+        self.name = basename(self.path)
         self.url = ''.join([self.URL, self.name, '/'])
 
     def show_one(self):
@@ -60,22 +60,22 @@ class FileHandler():
         except Exception as e:
             print(e)
 
-    def change(self):
+    def modify(self):
         try:
             self.download()
-            wb_open(self.path)
+            Popen([editor, self.path]).wait()
             self.upload()
         except Exception as e:
             print(e)
 
 try:
-    if argv[1] in ['show', 'get', 'put', 'post', 'delete', 'change']:
+    if argv[1] in ['show', 'get', 'put', 'post', 'delete', 'modify']:
         h = FileHandler(argv[2])
         h.func[argv[1]]()
 
     elif argv[1] == 'all':
         try:
-            print get(''.join(URL, 'config/')).text
+            print get(''.join([URL, 'config/'])).text
         except Exception as e:
             print(e)
 

@@ -1,6 +1,7 @@
 from requests import get
 
 URL = 'http://127.0.0.1:8000/api_ipf/'
+editor = '/usr/bin/vim.tiny'
 
 def help():
     print('Soon.')
