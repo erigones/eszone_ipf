@@ -85,21 +85,31 @@ try:
         except Exception as e:
             print(e)
 
-    elif argv[1] == 'stat':
+    elif argv[1] == 'ipfstat':
         try:
-            print get(''.join([URL, 'stats', argv[2]], '/')).text
+            print get(''.join([URL, ' '.join(argv[1:]), '/'])).text
         except IndexError:
-            print get(''.join([URL, 'stats/'])).text
+            print get(''.join([URL, 'ipfstat/'])).text
         except Exception as e:
             print(e)
 
-    elif argv[1] == 'ipf':
+    elif argv[1] == 'ipnat':
         try:
-            print put(''.join([URL, 'ipf', argv[2], '/'])).text
+            print get(''.join([URL, ' '.join(argv[1:]), '/'])).text
         except IndexError:
-            print get(''.join([URL, 'ipf/'])).text
+            print get(''.join([URL, 'ipnat/'])).text
         except Exception as e:
             print(e)
+
+    elif argv[1] == 'fw':
+        try:
+            print put(''.join([URL, 'fw', argv[2], '/'])).text
+        except IndexError:
+            print get(''.join([URL, 'fw/'])).text
+        except Exception as e:
+            print(e)
+    else:
+        print('Error: Unknown command.')
 
 except IndexError:
     print('Error: No file entered.')
