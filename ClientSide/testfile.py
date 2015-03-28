@@ -88,7 +88,15 @@ try:
 
     elif argv[1] == 'ipf':
         try:
-            print get(''.join([URL, ''.join(argv[1:]), '/'])).text
+            print get(''.join([URL, ''.join(argv[1:3]), '/'])).text
+        except Exception as e:
+            print(e)
+
+    elif argv[1] == 'log':
+        try:
+            print post(''.join([URL, 'log/']), data={'title':argv[2]}).text
+        except IndexError:
+            print get(''.join([URL, 'log/'])).text
         except Exception as e:
             print(e)
 
