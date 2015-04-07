@@ -1,7 +1,8 @@
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 CONF_DIR = ''.join([BASE_DIR, '/conf/']) #/etc/ipf/
-LOG_CONF = ''.join([BASE_DIR, '/other/log.conf']) #/etc/syslog.conf
+BCK_DIR = ''.join([BASE_DIR, '/backup/'])
+LOG_DIR = ''.join([BASE_DIR, '/log/']) #/var/log/
 
 SECRET_KEY = '%qlxd*cw(eftb8-w1bxlv^0_rj%am)@u3#$s6ez&^&_#=iaa9i'
 
@@ -20,7 +21,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'api_ipf',
-    'filetransfers',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -2,11 +2,13 @@ from sys import argv
 from os import remove, stat
 from os.path import basename
 from subprocess import Popen
-from requests import put, post, delete
-from helpers import *
+from requests import get, put, post, delete
+
+URL = 'http://127.0.0.1:8000/api_ipf/'
+editor = '/usr/bin/vim.tiny'
 
 
-class FileHandler():
+class ConfigHandler():
 
     def __init__(self, file_path):
         self.URL = ''.join([URL, 'config/'])
@@ -18,8 +20,8 @@ class FileHandler():
             'post':   self.create,
             'delete': self.remove,
             'modify': self.modify}
-        self.name = basename(self.path)
-        self.url = ''.join([self.URL, self.name, '/'])
+        self.title = basename(self.path)
+        self.url = ''.join([self.URL, self.title, '/'])
 
     def show_one(self):
         try:
@@ -31,8 +33,8 @@ class FileHandler():
         try:
             with open(self.path, 'r') as f:
                 print(post(self.URL,
-                           files={'title':   (self.name, ''),
-                                  'logfile': (self.name, f.read())}).text)
+                           files={'title':   (self.title, ''),
+                                  'config': (self.title, f.read())}).text)
         except Exception as e:
             print(e)
 
@@ -50,14 +52,14 @@ class FileHandler():
         try:
             with open(self.path, 'r') as f:
                 print(put(self.url,
-                          files={'title':   (self.name, ''),
-                                 'logfile': (self.name, f.read())}).text)
+                          files={'title':   (self.title, ''),
+                                 'config': (self.title, f.read())}).text)
         except Exception as e:
             print(e)
 
     def remove(self):
         try:
-            delete(self.url)
+            print(delete(self.url).text)
         except Exception as e:
             print(e)
 
@@ -69,34 +71,74 @@ class FileHandler():
         except Exception as e:
             print(e)
 
+
+class LogHandler():
+
+    def __init__(self, title):
+        self.URL = ''.join([URL, 'log/'])
+        self.title = title
+        self.func = {
+            'show':   self.show_one,
+            'post':   self.create,
+            'delete': self.remove}
+        self.url = ''.join([self.URL, self.title, '/'])
+
+    def show_one(self):
+        try:
+            print get(self.url).text
+        except Exception as e:
+            print(e)
+
+    def create(self):
+        try:
+            print(post(self.URL, data={'title':self.title}).text)
+        except Exception as e:
+            print(e)
+
+    def remove(self):
+        try:
+            print(delete(self.url).status_code)
+        except Exception as e:
+            print(e)
+
+
 try:
-    if argv[1] in ['show', 'get', 'put', 'post', 'delete', 'modify']:
-        h = FileHandler(argv[2])
-        h.func[argv[1]]()
-
-    elif argv[1] == 'all':
+    if argv[1] == 'config':
         try:
-            print get(''.join([URL, 'config/'])).text
-        except Exception as e:
-            print(e)
-
-    elif argv[1] == 'test':
-        try:
-            print get(''.join([URL, 'test/'])).text
-        except Exception as e:
-            print(e)
-
-    elif argv[1] == 'ipf':
-        try:
-            print get(''.join([URL, ''.join(argv[1:3]), '/'])).text
+            handler = ConfigHandler(argv[3])
+            handler.func[argv[2]]()
+        except IndexError:
+            print(get(''.join([URL, 'config/'])).text)
         except Exception as e:
             print(e)
 
     elif argv[1] == 'log':
         try:
-            print post(''.join([URL, 'log/']), data={'title':argv[2]}).text
+            handler = LogHandler(argv[3])
+            handler.func[argv[2]]()
         except IndexError:
-            print get(''.join([URL, 'log/'])).text
+            print(get(''.join([URL, 'log/'])).text)
+        except Exception as e:
+            print(e)
+
+    elif argv[1] == 'ipf':
+        try:
+            status = get(''.join([URL, 'command/', 'svcs ipfilter | tail -n 1 |'
+                                                   ' cut -d " " -f1/'])).text
+            if argv[2] == 'start':
+                if status == 'disabled':
+                    print(get(''.join([URL, 'command/',
+                                       'svcadm start ipfilter/'])).text)
+                elif status == 'online':
+                    print('Firewall is already started.')
+            elif argv[2] == 'stop':
+                if status == 'online':
+                    print(get(''.join([URL, 'command/',
+                                       'svcadm stop ipfilter/'])).text)
+                elif status == 'disabled':
+                    print('Firewall is already stopped.')
+        except IndexError:
+            print(status)
         except Exception as e:
             print(e)
 
@@ -109,7 +151,5 @@ try:
     else:
         print('Error: Unknown command.')
 
-except IndexError:
-    print('Error: No file entered.')
 except Exception as e:
     print(e)
