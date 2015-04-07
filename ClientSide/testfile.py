@@ -8,6 +8,22 @@ URL = 'http://127.0.0.1:8000/api_ipf/'
 editor = '/usr/bin/vim.tiny'
 
 
+def help():
+    print('''
+IPF firewall @MikuskaTomas
+
+Usage:
+    -h | --help
+    config [[show, get, put, post, delete, modify] [file_path]]
+    log [[show, post, delete] [file_title]]
+    ipf [start, stop]
+    ipfstat [valid ipfstat params]
+    ipnat [valid ipnat params]
+    ippool [valid ippool params]
+    ipmon [valid ipmon params]
+''')
+
+
 class ConfigHandler():
 
     def __init__(self, file_path):
@@ -33,7 +49,7 @@ class ConfigHandler():
         try:
             with open(self.path, 'r') as f:
                 print(post(self.URL,
-                           files={'title':   (self.title, ''),
+                           files={'title':  (self.title, ''),
                                   'config': (self.title, f.read())}).text)
         except Exception as e:
             print(e)
@@ -52,7 +68,7 @@ class ConfigHandler():
         try:
             with open(self.path, 'r') as f:
                 print(put(self.url,
-                          files={'title':   (self.title, ''),
+                          files={'title':  (self.title, ''),
                                  'config': (self.title, f.read())}).text)
         except Exception as e:
             print(e)
@@ -148,8 +164,11 @@ try:
         except Exception as e:
             print(e)
 
+    elif argv[1] in ['-h', '--help']:
+        help()
+
     else:
-        print('Error: Unknown command.')
+        print('Error: Unknown command.\nUse help by running with -h or --help')
 
 except Exception as e:
     print(e)
