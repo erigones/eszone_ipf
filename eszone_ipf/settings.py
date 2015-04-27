@@ -3,6 +3,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 CONF_DIR = ''.join([BASE_DIR, '/conf/']) #/etc/ipf/
 BCK_DIR = ''.join([BASE_DIR, '/backup/'])
 LOG_DIR = ''.join([BASE_DIR, '/log/']) #/var/log/
+ACT_IPF = ''.join([CONF_DIR, 'ipf.conf'])
 
 SECRET_KEY = '%qlxd*cw(eftb8-w1bxlv^0_rj%am)@u3#$s6ez&^&_#=iaa9i'
 

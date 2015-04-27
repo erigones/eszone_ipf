@@ -1,6 +1,7 @@
 from eszone_ipf.settings import CONF_DIR, LOG_DIR
 from os.path import exists
 from os import makedirs, remove, rename
+from subprocess import Popen
 from wget import download
 import schedule
 import time
@@ -85,7 +86,14 @@ def upload_blacklist():
     except Exception as e:
         print(e)
 
-def start():
+    '''try:
+        Popen('ippool -F')
+        Popen('ippoll -f {}'.format(''.join([CONF_DIR, 'ippool.conf']))
+    except Exception as e:
+        print(e)
+    '''
+
+def system_start():
     check_dirs()
     check_config()
     upload_blacklist()

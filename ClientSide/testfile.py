@@ -6,10 +6,7 @@ from requests import get, put, post, delete
 
 URL = 'http://127.0.0.1:8000/api_ipf/'
 editor = '/usr/bin/vim.tiny'
-
-
-def help():
-    print('''
+help='''
 IPF firewall @MikuskaTomas
 
 Usage:
@@ -21,7 +18,7 @@ Usage:
     ipnat [valid ipnat params]
     ippool [valid ippool params]
     ipmon [valid ipmon params]
-''')
+'''
 
 
 class ConfigHandler():
@@ -39,6 +36,12 @@ class ConfigHandler():
         self.title = basename(self.path)
         self.url = ''.join([self.URL, self.title, '/'])
 
+    def get_type(self):
+        return(raw_input('type(ipf/nat/ippool)? '))
+
+    def activate(self):
+        return(raw_input('activate(Y/N)? '))
+
     def show_one(self):
         try:
             print get(self.url).text
@@ -49,8 +52,10 @@ class ConfigHandler():
         try:
             with open(self.path, 'r') as f:
                 print(post(self.URL,
-                           files={'title':  (self.title, ''),
-                                  'config': (self.title, f.read())}).text)
+                           files={'title':     (self.title, ''),
+                                  'type':      (self.get_type(), ''),
+                                  'activate':  (self.activate(), ''),
+                                  'directory': (self.title, f.read())}).text)
         except Exception as e:
             print(e)
 
@@ -68,8 +73,9 @@ class ConfigHandler():
         try:
             with open(self.path, 'r') as f:
                 print(put(self.url,
-                          files={'title':  (self.title, ''),
-                                 'config': (self.title, f.read())}).text)
+                          files={'title':     (self.title, ''),
+                                 'activate':  (self.activate(), ''),
+                                 'directory': (self.title, f.read())}).text)
         except Exception as e:
             print(e)
 
@@ -137,38 +143,38 @@ try:
         except Exception as e:
             print(e)
 
-    elif argv[1] == 'ipf':
+    elif argv[1] in ['start', 'stop', 'status']:
         try:
             status = get(''.join([URL, 'command/', 'svcs ipfilter | tail -n 1 |'
                                                    ' cut -d " " -f1/'])).text
-            if argv[2] == 'start':
+            if argv[1] == 'start':
                 if status == 'disabled':
                     print(get(''.join([URL, 'command/',
                                        'svcadm start ipfilter/'])).text)
                 elif status == 'online':
                     print('Firewall is already started.')
-            elif argv[2] == 'stop':
+            elif argv[1] == 'stop':
                 if status == 'online':
                     print(get(''.join([URL, 'command/',
                                        'svcadm stop ipfilter/'])).text)
                 elif status == 'disabled':
                     print('Firewall is already stopped.')
-        except IndexError:
-            print(status)
+            elif argv[1] == 'status':
+                print(status)
         except Exception as e:
             print(e)
 
-    elif argv[1] in ['ipfstat', 'ipnat', 'ippool', 'ipmon']:
+    elif argv[1] in ['ipf', 'ipfstat', 'ipnat', 'ippool', 'ipmon']:
         try:
             print get(''.join([URL, 'command/', ' '.join(argv[1:]), '/'])).text
         except Exception as e:
             print(e)
 
     elif argv[1] in ['-h', '--help']:
-        help()
+        print help
 
     else:
         print('Error: Unknown command.\nUse help by running with -h or --help')
 
 except Exception as e:
-    print(e)
+    print e, help
