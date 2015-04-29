@@ -1,25 +1,45 @@
+"""
+Django settings for eszone_haproxy project.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/1.7/topics/settings/
+
+For the full list of settings and their values, see
+https://docs.djangoproject.com/en/1.7/ref/settings/
+"""
+
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-CONF_DIR = ''.join([BASE_DIR, '/conf/']) #/etc/ipf/
-BCK_DIR = ''.join([BASE_DIR, '/backup/'])
-LOG_DIR = ''.join([BASE_DIR, '/log/']) #/var/log/
-ACT_IPF = ''.join([CONF_DIR, 'ipf.conf'])
 
+
+# DEVELOPMENT (DEFAULT) SETTINGS
+# Secret key for development use only !
 SECRET_KEY = '%qlxd*cw(eftb8-w1bxlv^0_rj%am)@u3#$s6ez&^&_#=iaa9i'
 
+# Enable debug for development
 DEBUG = True
-
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+# PRODUCTION SETTINGS
+# You should run this application with ENV=production set in your production environment
+if os.environ.get('ENV') == 'production':
+    # Provide your secure secret key
+    SECRET_KEY = 'write your secret code here'
+
+    # Running with DEBUG enabled in production is insecure
+    DEBUG = False
+
+    # Add hosts, which will connect to this API
+    ALLOWED_HOSTS = [
+        '127.0.0.1',
+    ]
+
+
+# GENERAL SETTINGS
+# Definition of used applications
 INSTALLED_APPS = (
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
     'rest_framework',
     'api_ipf',
 )
@@ -57,3 +77,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+# APPLICATION SETTINGS
+# API Version, used also within urls
+API_VERSION_PREFIX = 'v1'
