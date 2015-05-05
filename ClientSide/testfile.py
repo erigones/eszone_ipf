@@ -36,12 +36,11 @@ class ConfigHandler():
             'modify': self.modify}
         self.title = basename(self.path)
         self.url = ''.join([self.URL, self.title, '/'])
-
-    def get_type(self):
-        return(raw_input('type(ipf/nat/ippool)? '))
+        self.type = 'ipf'
 
     def activate(self):
-        return(raw_input('activate(Y/N)? '))
+        if self.type in ['ipf', 'nat']:
+            return(raw_input('activate(Y/N)? '))
 
     def show_one(self):
         try:
@@ -52,9 +51,10 @@ class ConfigHandler():
     def create(self):
         try:
             with open(self.path, 'r') as f:
+                self.type = raw_input('type(ipf/nat/ippool)? ')
                 print(post(self.URL,
                            files={'title':     (self.title, ''),
-                                  'type':      (self.get_type(), ''),
+                                  'type':      (self.type, ''),
                                   'activate':  (self.activate(), ''),
                                   'directory': (self.title, f.read())}).text)
         except Exception as e:
