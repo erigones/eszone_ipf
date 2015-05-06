@@ -31,6 +31,14 @@ def check_config():
             f.write('#filter configuration')
         print('ipf.conf has been created............................OK')
 
+    path = ''.join([CONF_DIR, 'ipf6.conf'])
+    if exists(path):
+        print('ipf6.conf............................................OK')
+    else:
+        with open(path, 'a') as f:
+            f.write('#ipf6 configuration')
+        print('ipf6.conf has been created...........................OK')
+
     path = ''.join([CONF_DIR, 'ipnat.conf'])
     if exists(path):
         print('ipnat.conf...........................................OK')
