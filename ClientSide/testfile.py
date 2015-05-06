@@ -144,24 +144,19 @@ try:
         except Exception as e:
             print(e)
 
-    elif argv[1] in ['start', 'stop', 'status']:
+    elif argv[1] in ['enable', 'disable', 'restart', 'refresh', 'status']:
         try:
             status = get(''.join([URL, 'command/', 'svcs ipfilter | tail -n 1 |'
                                                    ' cut -d " " -f1/'])).text
-            if argv[1] == 'start':
-                if status == 'disabled':
-                    print(get(''.join([URL, 'command/',
-                                       'svcadm start ipfilter/'])).text)
-                elif status == 'online':
-                    print('Firewall is already started.')
-            elif argv[1] == 'stop':
-                if status == 'online':
-                    print(get(''.join([URL, 'command/',
-                                       'svcadm stop ipfilter/'])).text)
-                elif status == 'disabled':
-                    print('Firewall is already stopped.')
-            elif argv[1] == 'status':
+            if argv[1] == 'status':
                 print(status)
+            elif argv[1] == 'enable' and status == 'online':
+                print('Firewall is already enabled.')
+            elif argv[1] == 'disable' and status == 'disabled':
+                print('Firewall is already disabled.')
+            else:
+                get(''.join(
+                    [URL, 'command/svcadm {} ipfilter/'.format(argv[1])]))
         except Exception as e:
             print(e)
 
