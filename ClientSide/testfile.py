@@ -5,7 +5,7 @@ from subprocess import Popen
 from requests import get, put, post, delete
 
 version = 'v1'
-URL = 'http://192.168.0.104:8000/{0}/api_ipf/'.format(version)
+URL = 'http://127.0.0.1:8000/{0}/api_ipf/'.format(version)
 editor = '/usr/bin/vim.tiny'
 help='''
 IPF firewall @MikuskaTomas
