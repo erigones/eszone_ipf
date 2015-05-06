@@ -144,6 +144,9 @@ try:
         except Exception as e:
             print(e)
 
+    elif argv[1] == 'update':
+        get(URL+argv[1]+'/')
+
     elif argv[1] in ['enable', 'disable', 'restart', 'refresh', 'status']:
         try:
             status = get(''.join([URL, 'command/', 'svcs ipfilter | tail -n 1 |'
