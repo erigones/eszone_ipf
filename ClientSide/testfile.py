@@ -53,10 +53,10 @@ class ConfigHandler():
     def create(self):
         try:
             with open(self.path, 'r') as f:
-                self.type = raw_input('type(ipf/nat/ippool)? ')
+                self.form = raw_input('type(ipf/nat/ippool)? ')
                 print(post(self.URL,
                            files={'title':     (self.title, ''),
-                                  'type':      (self.type, ''),
+                                  'form':      (self.form, ''),
                                   'directory': (self.title, f.read())}).text)
         except Exception as e:
             print(e)
@@ -145,7 +145,7 @@ try:
             print(e)
 
     elif argv[1] == 'update':
-        get(URL+argv[1]+'/')
+        get(''.join([URL, 'update/']))
 
     elif argv[1] in ['enable', 'disable', 'restart', 'refresh', 'status']:
         try:
