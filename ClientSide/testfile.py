@@ -27,19 +27,22 @@ class ConfigHandler():
         self.URL = ''.join([URL, 'config/'])
         self.path = file_path
         self.func = {
-            'show':   self.show_one,
-            'get':    self.download,
-            'put':    self.upload,
-            'post':   self.create,
-            'delete': self.remove,
-            'modify': self.modify}
+            'show':     self.show_one,
+            'get':      self.download,
+            'put':      self.upload,
+            'post':     self.create,
+            'delete':   self.remove,
+            'modify':   self.modify,
+            'activate': self.activate}
         self.title = os.path.basename(self.path)
         self.url = ''.join([self.URL, self.title, '/'])
         self.type = 'ipf'
 
     def activate(self):
-        if self.type in ['ipf', 'nat']:
-            return(raw_input('activate(Y/N)? '))
+        try:
+            print(get(''.join([URL, 'activate/', self.title])).text)
+        except Exception as e:
+            print(e)
 
     def show_one(self):
         try:
@@ -54,7 +57,6 @@ class ConfigHandler():
                 print(post(self.URL,
                            files={'title':     (self.title, ''),
                                   'type':      (self.type, ''),
-                                  'activate':  (self.activate(), ''),
                                   'directory': (self.title, f.read())}).text)
         except Exception as e:
             print(e)
@@ -74,7 +76,6 @@ class ConfigHandler():
             with open(self.path, 'r') as f:
                 print(put(self.url,
                           files={'title':     (self.title, ''),
-                                 'activate':  (self.activate(), ''),
                                  'directory': (self.title, f.read())}).text)
         except Exception as e:
             print(e)
