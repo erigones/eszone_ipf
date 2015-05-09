@@ -1,6 +1,5 @@
+import os
 from sys import argv
-from os import remove, stat
-from os.path import basename
 from subprocess import Popen
 from requests import get, put, post, delete
 
@@ -34,7 +33,7 @@ class ConfigHandler():
             'post':   self.create,
             'delete': self.remove,
             'modify': self.modify}
-        self.title = basename(self.path)
+        self.title = os.path.basename(self.path)
         self.url = ''.join([self.URL, self.title, '/'])
         self.type = 'ipf'
 
@@ -64,8 +63,8 @@ class ConfigHandler():
         try:
             with open(self.path, 'w+') as f:
                 f.write(get(self.url).text)
-            if stat(self.path).st_size == 0:
-                remove(self.path)
+            if os.stat(self.path).st_size == 0:
+                os.remove(self.path)
                 raise Exception('No file.')
         except Exception as e:
             print(e)
