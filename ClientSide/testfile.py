@@ -40,7 +40,7 @@ class ConfigHandler():
 
     def activate(self):
         try:
-            print(get(''.join([URL, 'activate/', self.title])).text)
+            print(get(''.join([self.URL, 'activate/', self.title])).text)
         except Exception as e:
             print(e)
 
