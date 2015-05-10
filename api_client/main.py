@@ -13,6 +13,7 @@ Usage:
     -h | --help
     config [[show, get, put, post, delete, modify] [file_path]]
     log [[show, post, delete] [file_title]]
+    state
     ipf [start, stop]
     ipfstat [valid ipfstat params]
     ipnat [valid ipnat params]
@@ -22,14 +23,30 @@ Usage:
 
 
 class ConfigHandler():
+    """
+    A class that operates with a specific configuration file.
 
+    List of accessible methods:
+    - show (GET content)
+    - create (POST)
+    - download (GET content to file)
+    - update (PUT)
+    - delete (DELETE)
+    - modify (GET, change, PUT)
+    - activate (activate created file)
+    """
     def __init__(self, file_path):
+        """
+        Initialization method that processes necessary parameters.
+
+        :param file_path: path to the configuration file
+        """
         self.URL = ''.join([URL, 'config/'])
         self.path = file_path
         self.func = {
-            'show':     self.show_one,
+            'show':     self.show,
             'get':      self.download,
-            'put':      self.upload,
+            'put':      self.update,
             'post':     self.create,
             'delete':   self.remove,
             'modify':   self.modify,
@@ -38,22 +55,22 @@ class ConfigHandler():
         self.url = ''.join([self.URL, self.title, '/'])
         self.type = 'ipf'
 
-    def activate(self):
-        try:
-            print(get(''.join([self.URL, 'activate/', self.title])).text)
-        except Exception as e:
-            print(e)
-
-    def show_one(self):
+    def show(self):
+        """
+        Method that prints content of a requested configuration file.
+        """
         try:
             print get(self.url).text
         except Exception as e:
             print(e)
 
     def create(self):
+        """
+        Method that request file creation with a specific title and form.
+        """
         try:
             with open(self.path, 'r') as f:
-                self.form = raw_input('type(ipf/nat/ippool)? ')
+                self.form = raw_input('form(ipf/ipf6/nat/ippool)? ')
                 print(post(self.URL,
                            files={'title':     (self.title, ''),
                                   'form':      (self.form, ''),
@@ -62,6 +79,9 @@ class ConfigHandler():
             print(e)
 
     def download(self):
+        """
+        Method that downloads copy of a requested configuration file.
+        """
         try:
             with open(self.path, 'w+') as f:
                 f.write(get(self.url).text)
@@ -71,7 +91,10 @@ class ConfigHandler():
         except Exception as e:
             print(e)
 
-    def upload(self):
+    def update(self):
+        """
+        Method that requests update of a specific configuration file.
+        """
         try:
             with open(self.path, 'r') as f:
                 print(put(self.url,
@@ -81,12 +104,19 @@ class ConfigHandler():
             print(e)
 
     def remove(self):
+        """
+        Method that requests delete of a specific configuration file.
+        """
         try:
             print(delete(self.url).text)
         except Exception as e:
             print(e)
 
     def modify(self):
+        """
+        Method that firstly downloads a specific configuration file, opens it
+        for a rewrite and requests its update.
+        """
         try:
             self.download()
             Popen([editor, self.path]).wait()
@@ -94,31 +124,56 @@ class ConfigHandler():
         except Exception as e:
             print(e)
 
+    def activate(self):
+        """
+        Method that requests activation of a specific configuration file.
+        """
+        try:
+            print(get(''.join([self.URL, 'activate/', self.title])).text)
+        except Exception as e:
+            print(e)
+
 
 class LogHandler():
+    """
+    A class that operates with a specific log.
 
+    List of accessible methods:
+    - show (GET content)
+    - create (POST)
+    - delete (DELETE)
+    """
     def __init__(self, title):
         self.URL = ''.join([URL, 'log/'])
         self.title = title
         self.func = {
-            'show':   self.show_one,
+            'show':   self.show,
             'post':   self.create,
             'delete': self.remove}
         self.url = ''.join([self.URL, self.title, '/'])
 
-    def show_one(self):
+    def show(self):
+        """
+        Method that prints content of a requested log.
+        """
         try:
             print get(self.url).text
         except Exception as e:
             print(e)
 
     def create(self):
+        """
+        Method that request log creation with a specific title.
+        """
         try:
-            print(post(self.URL, data={'title':self.title}).text)
+            print(post(self.URL, data={'title': self.title}).text)
         except Exception as e:
             print(e)
 
     def remove(self):
+        """
+        Method that requests delete of a specific log.
+        """
         try:
             print(delete(self.url).status_code)
         except Exception as e:
@@ -131,6 +186,7 @@ try:
             handler = ConfigHandler(argv[3])
             handler.func[argv[2]]()
         except IndexError:
+            # show all configuration files
             print(get(''.join([URL, 'config/'])).text)
         except Exception as e:
             print(e)
@@ -140,22 +196,24 @@ try:
             handler = LogHandler(argv[3])
             handler.func[argv[2]]()
         except IndexError:
+            # show all logs
             print(get(''.join([URL, 'log/'])).text)
         except Exception as e:
             print(e)
 
     elif argv[1] == 'update':
+        # update IP blacklist
         get(''.join([URL, 'update/']))
 
-    elif argv[1] in ['enable', 'disable', 'restart', 'refresh', 'status']:
+    elif argv[1] in ['enable', 'disable', 'restart', 'refresh', 'state']:
+        # enable, disable, restart or refresh IPFilter of get its state
         try:
-            status = get(''.join([URL, 'command/', 'svcs ipfilter | tail -n 1 |'
-                                                   ' cut -d " " -f1/'])).text
-            if argv[1] == 'status':
-                print(status)
-            elif argv[1] == 'enable' and status == 'online':
+            state = get(''.join([URL, 'state/'])).text
+            if argv[1] == 'state':
+                print(state)
+            elif argv[1] == 'enable' and state == 'online':
                 print('Firewall is already enabled.')
-            elif argv[1] == 'disable' and status == 'disabled':
+            elif argv[1] == 'disable' and state == 'disabled':
                 print('Firewall is already disabled.')
             else:
                 get(''.join(
@@ -164,8 +222,9 @@ try:
             print(e)
 
     elif argv[1] in ['ipf', 'ipfstat', 'ipnat', 'ippool', 'ipmon']:
+        # other IPFilter basic commands
         try:
-            print get(''.join([URL, 'command/', ' '.join(argv[1:]), '/'])).text
+            print get(''.join([URL, ' '.join(argv[1:]), '/'])).text
         except Exception as e:
             print(e)
 
