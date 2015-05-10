@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'api_ipf',
 )
 
+# Definition of used middleware
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,8 +55,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+# Path within application to main file with url setup
 ROOT_URLCONF = 'eszone_ipf.urls'
 
+# Path to file containing wsgi configuration ready for deployment
 WSGI_APPLICATION = 'eszone_ipf.wsgi.application'
 
 DATABASES = {
@@ -64,7 +67,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 LANGUAGE_CODE = 'en-us'
 
@@ -78,6 +80,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# APPLICATION SETTINGS
 # API Version, used also within urls
 API_VERSION_PREFIX = 'v1'
