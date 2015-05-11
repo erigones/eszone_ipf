@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework import status
-from eszone_ipf.settings import BASE_DIR, API_VERSION_PREFIX
+
+from service_ipf.eszone_ipf.settings import BASE_DIR, API_VERSION_PREFIX
 
 
 class ConfigFileTestCase(TestCase):

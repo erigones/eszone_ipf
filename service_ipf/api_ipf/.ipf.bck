@@ -24,10 +24,9 @@ pass out quick on net0 proto tcp from any to any port = 22 flags S keep state
 pass out quick on net0 proto tcp from any to any port = 37 flags S keep state
 
 # Allow outbound access to public DNS servers.
-# /etc/resolv.conf.
-# dns_server_ip = '46.229.234.15'
-# pass out quick on net0 proto tcp from any to $dns_server_ip port = 53 flags S keep state
-# pass out quick on net0 proto udp from any to $dns_server_ip port = 53 keep state
+# get DNS server IPs from /etc/resolv.conf.
+# pass out quick on net0 proto tcp from any to SET_IP port = 53 flags S keep state
+# pass out quick on net0 proto udp from any to SET_IP port = 53 keep state
 
 # Allow ping
 pass in quick on net0 proto icmp from any to any icmp-type 0 code 0 keep state
@@ -36,7 +35,7 @@ pass out quick on net0 proto icmp from any to any icmp-type 8 code 0 keep state
 # Inbound traffic session
 # Block all inbound traffic from non-routable or reserved address spaces
 
-# Private IPs
+# Private IPs IP of global zone must not be blocked
 block in quick on net0 from 192.168.0.0/16 to any
 block in quick on net0 from 172.16.0.0/12 to any
 # block in quick on net0 from 10.0.0.0/8 to any

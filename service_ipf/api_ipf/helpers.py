@@ -2,16 +2,18 @@ from os import remove, makedirs, devnull
 from os.path import exists
 from shutil import copyfile
 from datetime import datetime
-from wget import download
 from zipfile import ZipFile
+import sys
+import time
+
+from wget import download
 from django.db import connection
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
-from api_ipf.settings import *
-import sys
 import sh
 import schedule
-import time
+
+from service_ipf.api_ipf.settings import *
 
 
 class JSONResponse(HttpResponse):

@@ -1,6 +1,9 @@
-from django.db import models
 from subprocess import Popen
-from api_ipf.settings import CONF_DIR, LOG_DIR
+
+from django.db import models
+
+from service_ipf.api_ipf.settings import CONF_DIR, LOG_DIR
+
 
 class ConfigFile(models.Model):
     """

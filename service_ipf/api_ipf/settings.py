@@ -1,4 +1,4 @@
-from eszone_ipf.settings import BASE_DIR
+from service_ipf.eszone_ipf.settings import BASE_DIR
 
 # Directory for storing configuration files.
 CONF_DIR = ''.join([BASE_DIR, '/conf/'])
