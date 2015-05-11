@@ -1,6 +1,5 @@
 from django.conf.urls import patterns, include, url
-
-from service_ipf.eszone_ipf.settings import API_VERSION_PREFIX
+from eszone_ipf.settings import API_VERSION_PREFIX
 
 
 urlpatterns = patterns('',
