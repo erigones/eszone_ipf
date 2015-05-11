@@ -4,9 +4,11 @@ from subprocess import Popen
 from requests import get, put, post, delete
 
 version = 'v1'
-URL = 'http://127.0.0.1:8000/{0}/api_ipf/'.format(version)
+IP = '127.0.0.1'
+port = '8000'
+URL = 'http://{}:{}/{}/api_ipf/'.format(IP, port, version)
 editor = '/usr/bin/vim.tiny'
-help='''
+help = '''
 IPF firewall @MikuskaTomas
 
 Usage:
@@ -187,7 +189,10 @@ try:
             handler.func[argv[2]]()
         except IndexError:
             # show all configuration files
-            print(get(''.join([URL, 'config/'])).text)
+            if not argv[2]:
+                print(get(''.join([URL, 'config/'])).text)
+            else:
+                print help
         except Exception as e:
             print(e)
 
@@ -197,7 +202,10 @@ try:
             handler.func[argv[2]]()
         except IndexError:
             # show all logs
-            print(get(''.join([URL, 'log/'])).text)
+            if not argv[2]:
+                print(get(''.join([URL, 'log/'])).text)
+            else:
+                print help
         except Exception as e:
             print(e)
 
@@ -206,7 +214,7 @@ try:
         get(''.join([URL, 'update/']))
 
     elif argv[1] in ['enable', 'disable', 'restart', 'refresh', 'state']:
-        # enable, disable, restart or refresh IPFilter of get its state
+        # enable, disable, restart and refresh IPFilter or get its state
         try:
             state = get(''.join([URL, 'state/'])).text
             if argv[1] == 'state':
@@ -228,7 +236,7 @@ try:
         except Exception as e:
             print(e)
 
-    elif argv[1] in ['-h', '--help']:
+    elif argv[1] == 'help':
         print help
 
     else:
