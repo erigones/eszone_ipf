@@ -33,7 +33,7 @@ if os.environ.get('ENV') == 'production':
 
     # Add hosts, which will connect to this API
     ALLOWED_HOSTS = [
-        '127.0.0.1',
+        '10.10.10.10',
     ]
 
 
