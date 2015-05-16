@@ -1,5 +1,5 @@
 """
-Django settings for eszone_ipf project.
+Django settings for eszone_haproxy project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -8,36 +8,43 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# DEVELOPMENT (DEFAULT) SETTINGS
+# Secret key for development use only !
 SECRET_KEY = '%qlxd*cw(eftb8-w1bxlv^0_rj%am)@u3#$s6ez&^&_#=iaa9i'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Enable debug for development
 DEBUG = True
-
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
 
-# Application definition
+# PRODUCTION SETTINGS
+# You should run this application with ENV=production set in your production environment
+if os.environ.get('ENV') == 'production':
+    # Provide your secure secret key
+    SECRET_KEY = 'write your secret code here'
 
+    # Running with DEBUG enabled in production is insecure
+    DEBUG = False
+
+    # Add hosts, which will connect to this API
+    ALLOWED_HOSTS = [
+        '10.10.10.10',
+    ]
+
+
+# GENERAL SETTINGS
+# Definition of used applications
 INSTALLED_APPS = (
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'rest_framework',
+    'api_ipf',
 )
 
+# Definition of used middleware
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -48,13 +55,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+# Path within application to main file with url setup
 ROOT_URLCONF = 'eszone_ipf.urls'
 
+# Path to file containing wsgi configuration ready for deployment
 WSGI_APPLICATION = 'eszone_ipf.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -62,9 +67,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-# Internationalization
-# https://docs.djangoproject.com/en/1.7/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -76,8 +78,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.7/howto/static-files/
-
 STATIC_URL = '/static/'
+
+# API Version, used also within urls
+API_VERSION_PREFIX = 'v1'

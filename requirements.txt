@@ -2,3 +2,6 @@ Django==1.7.1
 argparse==1.2.1
 djangorestframework==2.4.4
 wsgiref==0.1.2
+wget==2.2
+schedule==0.3.1
+sh==1.11

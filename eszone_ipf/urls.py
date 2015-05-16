@@ -1,10 +1,7 @@
 from django.conf.urls import patterns, include, url
-from django.contrib import admin
+from eszone_ipf.settings import API_VERSION_PREFIX
+
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'eszone_ipf.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^{0}/api_ipf/'.format(API_VERSION_PREFIX), include('api_ipf.urls')),
 )
