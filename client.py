@@ -1,27 +1,14 @@
 import os
+from json import dumps, loads
 from sys import argv
 from subprocess import Popen
 from requests import get, put, post, delete
 
 version = 'v1'
-IP = '127.0.0.1'
+IP = '10.10.10.10'
 port = '8000'
 URL = 'http://{}:{}/{}/api_ipf/'.format(IP, port, version)
 editor = '/usr/bin/vim'
-help = '''
-IPF firewall @MikuskaTomas
-
-Usage:
-    -h | --help
-    config [[show, get, put, post, delete, modify] [file_path]]
-    log [[show, post, delete] [file_title]]
-    state
-    ipf [start, stop]
-    ipfstat [valid ipfstat params]
-    ipnat [valid ipnat params]
-    ippool [valid ippool params]
-    ipmon [valid ipmon params]
-'''
 
 
 class ConfigHandler():
@@ -55,20 +42,17 @@ class ConfigHandler():
             'activate': self.activate}
         self.title = os.path.basename(self.path)
         self.url = ''.join([self.URL, self.title, '/'])
-        self.type = 'ipf'
+        self.form = 'ipf'
 
     def show(self):
         """
         Method that prints content of a requested configuration file.
-       
-	Classic unix method print(get(self.url).text)
-	Solaris method is more difficult.
-	
-	Same problem at download method.
-	"""
+
+        Linux method print(get(self.url).text).
+        For Solaris is used pretty_print function.
+        """
         try:
-            for line in get(self.url).text[1:-1].split('\\n'):
-		print line
+            pretty_print(get(self.url)) 
         except Exception as e:
             print(e)
 
@@ -77,12 +61,11 @@ class ConfigHandler():
         Method that request file creation with a specific title and form.
         """
         try:
+            self.form = raw_input('form(ipf/ipf6/ipnat/ippool)? ')
             with open(self.path, 'r') as f:
-		self.form = raw_input('form(ipf/ipf6/nat/ippool)? ')
-                print(post(self.URL,
-                           files={'title':     (self.title, ''),
-                                  'form':      (self.form, ''),
-                                  'directory': (self.title, f.read())}).text)
+                files={'title': (self.title, ''), 'form': (self.form, ''),
+                       'directory': (self.title, f.read())}
+            pretty_print(post(self.URL, files=files))
         except Exception as e:
             print(e)
 
@@ -91,10 +74,15 @@ class ConfigHandler():
         Method that downloads copy of a requested configuration file.
         """
         try:
+            response = get(self.url)
             with open(self.path, 'wb') as f:
- 		for line in get(self.url).text[1:-1].split('\\n'):
-	   	    f.write(line + "\n")
-            if os.stat(self.path).st_size == 0:
+                for line in response.text[1:-1].split('\\n'):
+                    f.write(line + '\n')
+            print('Status: {} '.format(response.status_code)),
+            
+            if os.stat(self.path).st_size != 0:
+                print('Downloaded.')
+            else:
                 os.remove(self.path)
                 raise Exception('No file.')
         except Exception as e:
@@ -106,9 +94,9 @@ class ConfigHandler():
         """
         try:
             with open(self.path, 'r') as f:
-                print(put(self.url,
-                          files={'title':     (self.title, ''),
-                                 'directory': (self.title, f.read())}).text)
+                files={'title': (self.title, ''),
+                       'directory': (self.title, f.read())}
+            pretty_print(put(self.url, files=files))
         except Exception as e:
             print(e)
 
@@ -117,7 +105,7 @@ class ConfigHandler():
         Method that requests delete of a specific configuration file.
         """
         try:
-            print(delete(self.url).text)
+            pretty_print(delete(self.url)) 
         except Exception as e:
             print(e)
 
@@ -138,7 +126,7 @@ class ConfigHandler():
         Method that requests activation of a specific configuration file.
         """
         try:
-            print(get(''.join([self.URL, 'activate/', self.title], '/')).text)
+            pretty_print(get(''.join([self.URL, 'activate/', self.title, '/'])))
         except Exception as e:
             print(e)
 
@@ -166,8 +154,7 @@ class LogHandler():
         Method that prints content of a requested log.
         """
         try:
-            for line in get(self.url).text[1:-1].split('\\n'):
-		print line
+            pretty_print(get(self.url))
         except Exception as e:
             print(e)
 
@@ -176,7 +163,7 @@ class LogHandler():
         Method that request log creation with a specific title.
         """
         try:
-            print(post(self.URL, data={'title': self.title}).text)
+            pretty_print(post(self.URL, data={'title': self.title}))
         except Exception as e:
             print(e)
 
@@ -185,9 +172,32 @@ class LogHandler():
         Method that requests delete of a specific log.
         """
         try:
-            print(delete(self.url).status_code)
+            pretty_print(delete(self.url))            
         except Exception as e:
             print(e)
+
+
+def JSON_print(JSONresponse):
+    """
+    Function that takes JSON response from server response and translates it
+    into more readable form.
+    """
+    print('Status: {}'.format(JSONresponse.status_code))
+    print dumps(loads(JSONresponse.text), indent=4)
+
+
+def pretty_print(response):
+    """
+    Function that takes string response from server respose and
+    translates '/n' characters.
+    """
+    print('Status: {}'.format(response.status_code)),
+    
+    if len(response.text) >= 80:
+        print('')
+    
+    for line in response.text[1:-1].split('\\n'):
+        print(line)
 
 
 try:
@@ -197,7 +207,13 @@ try:
             handler.func[argv[2]]()
         except IndexError:
             # show all configuration files
-            print(get(''.join([URL, 'config/'])).text)
+            try:
+                if argv[2] in ['show', 'get', 'post', 'put', 'delete', 'modify']:
+                    print('Function needs an argument.')
+                else:
+                    print('Error: Unknown command.')
+            except IndexError:
+                JSON_print(get(''.join([URL, 'config/'])))
         except Exception as e:
             print(e)
 
@@ -207,36 +223,55 @@ try:
             handler.func[argv[2]]()
         except IndexError:
             # show all logs
-            print(get(''.join([URL, 'log/'])).text)
+            try:
+                if argv[2] in ['show', 'post', 'delete']:
+                    print('Function needs an argument.')
+                else:
+                    print('Error: Unknown command.')
+            except IndexError:
+                JSON_print(get(''.join([URL, 'log/'])))
         except Exception as e:
             print(e)
 
     elif argv[1] == 'update':
         # update IP blacklist
-        get(''.join([URL, 'update/']))
+        pretty_print(get(''.join([URL, 'update/'])))
 
     elif argv[1] in ['enable', 'disable', 'restart', 'refresh']:
         # enable, disable, restart or refresh IPFilter
         try:
-	     print(get(''.join([URL, 'svcadm/{}/'.format(argv[1])]).text))
+            pretty_print(get(''.join([URL, 'svcadm/{}/'.format(argv[1])])))
         except Exception as e:
             print(e)
 
-    elif argv[1] in ['ipf', 'ipfstat', 'ipnat', 'ippool', 'ipmon']:
+    elif argv[1] in ['ipf', 'ipnat', 'ippool', 'ipmon']:
         # other IPFilter basic commands
         try:
-            print(get(
-                ''.join([URL, argv[1], '/', ' '.join(argv[2:]), '/'])).text)
+            if argv[2]:
+                pretty_print(
+                    get(''.join([URL, argv[1], '/', ' '.join(argv[2:]), '/'])))
         except IndexError as e:
-            print('Function need arguments.')
+            print('{} needs argument.'.format(argv[1]))
+        except Exception as e:
+            print(e)
+
+    elif argv[1] == 'ipfstat':
+        # ipfstat is separated due to workability without arguments
+        try:
+            if argv[2]:
+                pretty_print(
+                    get(''.join([URL, argv[1], '/', ' '.join(argv[2:]), '/'])))
+        except IndexError as e:
+            pretty_print(get(''.join([URL, argv[1], '/'])))
         except Exception as e:
             print(e)
 
     elif argv[1] == 'help':
-        print help
-
+        with open('usage', 'r') as f:
+            print(f.read())
+    
     else:
-        print('Error: Unknown command.\nUse help by running with -h or --help')
+        print('Error: Unknown command.\nUse help by running with "help" argument')
 
 except Exception as e:
-    print e, help
+    print e

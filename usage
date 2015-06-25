@@ -1,0 +1,30 @@
+Usage:
+    
+config [show | get | put | post | delete | modify <filepath>]
+
+log [show | post | delete <filename>]
+
+enable | disable | restart | refresh
+
+help
+
+ipf [-6AdDEGInoPrRsvVyzZ] [-l block|pass|nomatch|state|nat] [-cc] [-F i|o|a|s|S|u] [-f filename] [-T <tuneopts>] [zonename]
+
+ipnat [-CdFhlnrRsv] [-f filename] [-G|-z zonename]
+
+ippool
+      -a [-dnv] [-G|-z zonename] [-m <name>] [-o <role>] -i <ipaddr>[/netmask]
+      -A [-dnv] [-G|-z zonename] [-m <name>] [-o <role>] [-S <seed>] [-t <type>]
+      -f <file> [-G|-z zonename] [-dnuv]
+      -F [-dv] [-G|-z zonename] [-o <role>] [-t <type>]
+      -l [-dv] [-G|-z zonename] [-m <name>] [-t <type>]
+      -r [-dnv] [-G|-z zonename] [-m <name>] [-o <role>] -i <ipaddr>[/netmask]
+      -R [-dnv] [-G|-z zonename] [-m <name>] [-o <role>] [-t <type>]
+      -s [-dtv] [-G|-z zonename] [-M <core>] [-N <namelist>]
+
+
+ipfstat [-6aAdfghIilnoRsv]
+ipfstat [-M corefile] [-N symbol-list]
+ipfstat -t [-6C] [-G|-z zonename] [-D destination address] [-P protocol] [-S source address] [-T refresh time]
+
+ipmon [-abDFhnpstvxX] [-G|-z zonename] [-N device] [ [-o [NSI]] [-O [NSI]] [-P pidfile] [-S device] [-f device] filename

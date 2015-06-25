@@ -5,3 +5,4 @@ wsgiref==0.1.2
 wget==2.2
 schedule==0.3.1
 sh==1.11
+pysqlite==2.6.3
